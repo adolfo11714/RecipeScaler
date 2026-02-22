@@ -1,0 +1,13 @@
+# Compiled class files
+bin/
+*.class
+
+# VS Code settings (optional, see note below)
+.vscode/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
