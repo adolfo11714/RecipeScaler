@@ -1,13 +1,13 @@
 package com.adolfomartinez.recipescaler.panels;
 
-import com.adolfomartinez.recipescaler.MainFrame;
+import com.adolfomartinez.recipescaler.App;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import javax.swing.*;
 
 public class MainMenuPanel extends JPanel {
-    public MainMenuPanel(MainFrame frame) {
+    public MainMenuPanel(App frame) {
 
         setLayout(new BorderLayout());
 
