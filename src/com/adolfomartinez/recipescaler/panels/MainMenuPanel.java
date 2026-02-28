@@ -1,13 +1,13 @@
 package com.adolfomartinez.recipescaler.panels;
 
-import com.adolfomartinez.recipescaler.App;
+import com.adolfomartinez.recipescaler.GuiManager;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import javax.swing.*;
 
 public class MainMenuPanel extends JPanel {
-    public MainMenuPanel(App frame) {
+    public MainMenuPanel(GuiManager frame) {
 
         setLayout(new BorderLayout());
 
@@ -15,6 +15,7 @@ public class MainMenuPanel extends JPanel {
         menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
         menu.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
+        // Setting button size
         Dimension buttonSize = new Dimension(400, 70);
 
         JButton secondButton = new JButton("Go to Second Screen");
@@ -58,6 +59,7 @@ public class MainMenuPanel extends JPanel {
         fifthButton.setMaximumSize(buttonSize);
         fifthButton.setMinimumSize(buttonSize);
 
+        // When user clicks on the button it will lead them to respective screen
         secondButton.addActionListener(e -> frame.showScreen("SECOND"));
 
         thirdButton.addActionListener(e -> frame.showScreen("THIRD"));

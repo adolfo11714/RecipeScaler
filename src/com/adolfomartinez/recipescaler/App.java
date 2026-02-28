@@ -8,7 +8,7 @@ public class App{
         SwingUtilities.invokeLater(() -> {
             GuiManager gm = GuiManager.getInstance();
 
-            gm.registerScreen("MENU", new MainMenuPanel());
+            gm.registerScreen("MENU", new MainMenuPanel(gm));
 
             gm.showScreen("MENU");
         });
