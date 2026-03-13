@@ -9,6 +9,7 @@ public class ThirdPanel extends JPanel {
         // give the panel a layout so added components are visible
         setLayout(new java.awt.BorderLayout());
 
+        // create a text area and give it some text
         JTextArea area = new JTextArea(10, 30);
         area.setText("Third Screeeeeeen!");
 

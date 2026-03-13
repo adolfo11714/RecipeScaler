@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+// Singleton class to manage the GUI screens using CardLayout
 public class GuiManager {
     // screen name constants
     public static final String MAIN_SCREEN = "main";

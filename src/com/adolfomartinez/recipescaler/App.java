@@ -1,13 +1,13 @@
 package com.adolfomartinez.recipescaler;
 
+import com.adolfomartinez.recipescaler.panels.FifthPanel;
 import com.adolfomartinez.recipescaler.panels.FourthPanel;
 import com.adolfomartinez.recipescaler.panels.MainMenuPanel;
 import com.adolfomartinez.recipescaler.panels.SecondPanel;
 import com.adolfomartinez.recipescaler.panels.ThirdPanel;
-import com.adolfomartinez.recipescaler.panels.FifthPanel;
 import javax.swing.SwingUtilities;
 
-public class App{
+public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             GuiManager gm = GuiManager.getInstance();
