@@ -60,12 +60,12 @@ public class MainMenuPanel extends JPanel {
         fifthButton.setMinimumSize(buttonSize);
 
         // When user clicks on the button it will lead them to respective screen
-        secondButton.addActionListener(e -> frame.showScreen("SECOND"));
+        secondButton.addActionListener(e -> frame.showScreen(GuiManager.SECOND_SCREEN));
 
-        thirdButton.addActionListener(e -> frame.showScreen("THIRD"));
+        thirdButton.addActionListener(e -> frame.showScreen(GuiManager.THIRD_SCREEN));
 
-        fourthButton.addActionListener(e -> frame.showScreen("FOURTH"));
+        fourthButton.addActionListener(e -> frame.showScreen(GuiManager.FOURTH_SCREEN));
 
-        fifthButton.addActionListener(e -> frame.showScreen("FIFTH"));
+        fifthButton.addActionListener(e -> frame.showScreen(GuiManager.FIFTH_SCREEN));
     }
 }

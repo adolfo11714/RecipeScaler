@@ -5,6 +5,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class GuiManager {
+    // screen name constants
+    public static final String MAIN_SCREEN = "main";
+    public static final String SECOND_SCREEN = "second";
+    public static final String THIRD_SCREEN = "third";
+    public static final String FOURTH_SCREEN = "fourth";
+    public static final String FIFTH_SCREEN = "fifth";
+
     private static GuiManager instance;
     
     private final JFrame window;
