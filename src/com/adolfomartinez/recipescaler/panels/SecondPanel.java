@@ -1,29 +1,72 @@
 package com.adolfomartinez.recipescaler.panels;
 
 import com.adolfomartinez.recipescaler.GuiManager;
-import java.awt.BorderLayout;
+import java.awt.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class SecondPanel extends JPanel {
+
     public SecondPanel(GuiManager frame) {
-        // give the panel a layout so added components are visible
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new BorderLayout());
 
-        // create a text area and give it some text
-        JTextArea area = new JTextArea(10, 30);
-        area.setText("Second Screeeeeeen!");
+        // ===== TOP FORM =====
+        JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
 
-        // add the text area (wrapped in scroll pane) to this panel
-        add(new JScrollPane(area), java.awt.BorderLayout.CENTER);
+        JLabel nameLabel = new JLabel("Recipe Name:");
+        JTextField nameField = new JTextField();
 
-        // create back button
+        JLabel servingsLabel = new JLabel("Base Servings:");
+        JTextField servingsField = new JTextField();
+
+        formPanel.add(nameLabel);
+        formPanel.add(nameField);
+        formPanel.add(servingsLabel);
+        formPanel.add(servingsField);
+
+        add(formPanel, BorderLayout.NORTH);
+
+        // ===== INGREDIENT TABLE =====
+        String[] columns = {"Ingredient", "Amount", "Unit"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        JTable table = new JTable(model);
+
+        add(new JScrollPane(table), BorderLayout.CENTER);
+
+        // ===== BUTTONS =====
+        JPanel buttonPanel = new JPanel();
+
+        JButton addIngredient = new JButton("Add Ingredient");
+        JButton removeIngredient = new JButton("Remove Ingredient");
+        JButton saveRecipe = new JButton("Save Recipe");
         JButton backButton = new JButton("Back to Menu");
 
-        // add action listener when clicked goes back to main menu
+        buttonPanel.add(addIngredient);
+        buttonPanel.add(removeIngredient);
+        buttonPanel.add(saveRecipe);
+        buttonPanel.add(backButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // ===== BUTTON LOGIC =====
+
+        addIngredient.addActionListener(e -> {
+            model.addRow(new Object[]{"", "", ""});
+        });
+
+        removeIngredient.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row != -1) {
+                model.removeRow(row);
+            }
+        });
+
         backButton.addActionListener(e -> {
             frame.showScreen(GuiManager.MAIN_SCREEN);
         });
 
-        add(backButton, BorderLayout.SOUTH);
+        saveRecipe.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Recipe saved (logic not implemented yet)");
+        });
     }
 }
