@@ -18,20 +18,20 @@ public class MainMenuPanel extends JPanel {
         // Setting button size
         Dimension buttonSize = new Dimension(400, 70);
 
-        JButton secondButton = new JButton("Create Recipe");
+        JButton createRecipeButton = new JButton("Create Recipe");
         JButton thirdButton = new JButton("Go to Third Screen");
         JButton fourthButton = new JButton("Go to Fourth Screen");
         JButton fifthButton = new JButton("Go to Fifth Screen");
 
         // Center Buttons (BoxLayout needs this)
-        secondButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        createRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         thirdButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         fourthButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         fifthButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Center vertically
         menu.add(Box.createVerticalGlue());
-        menu.add(secondButton);
+        menu.add(createRecipeButton);
         menu.add(Box.createVerticalStrut(15));
         menu.add(thirdButton);
         menu.add(Box.createVerticalStrut(15));
@@ -43,9 +43,9 @@ public class MainMenuPanel extends JPanel {
         add(menu, BorderLayout.CENTER);
 
         // Set button size
-        secondButton.setPreferredSize(buttonSize);
-        secondButton.setMaximumSize(buttonSize);
-        secondButton.setMinimumSize(buttonSize);
+        createRecipeButton.setPreferredSize(buttonSize);
+        createRecipeButton.setMaximumSize(buttonSize);
+        createRecipeButton.setMinimumSize(buttonSize);
 
         thirdButton.setPreferredSize(buttonSize);
         thirdButton.setMaximumSize(buttonSize);
@@ -60,7 +60,7 @@ public class MainMenuPanel extends JPanel {
         fifthButton.setMinimumSize(buttonSize);
 
         // When user clicks on the button it will lead them to respective screen
-        secondButton.addActionListener(e -> frame.showScreen(GuiManager.CREATE_RECIPE));
+        createRecipeButton.addActionListener(e -> frame.showScreen(GuiManager.CREATE_RECIPE));
 
         thirdButton.addActionListener(e -> frame.showScreen(GuiManager.THIRD_SCREEN));
 

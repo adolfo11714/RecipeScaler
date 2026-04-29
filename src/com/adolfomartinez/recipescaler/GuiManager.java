@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 public class GuiManager {
     // screen name constants
     public static final String MAIN_SCREEN = "main";
-    public static final String CREATE_RECIPE = "second";
+    public static final String CREATE_RECIPE = "createRecipe";
     public static final String THIRD_SCREEN = "third";
     public static final String FOURTH_SCREEN = "fourth";
     public static final String FIFTH_SCREEN = "fifth";
