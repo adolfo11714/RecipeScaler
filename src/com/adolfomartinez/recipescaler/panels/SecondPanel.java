@@ -1,6 +1,7 @@
 package com.adolfomartinez.recipescaler.panels;
 
 import com.adolfomartinez.recipescaler.GuiManager;
+import com.adolfomartinez.recipescaler.MeasurementUnit;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -30,6 +31,8 @@ public class SecondPanel extends JPanel {
         String[] columns = {"Ingredient", "Amount", "Unit"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
         JTable table = new JTable(model);
+        JComboBox<MeasurementUnit> unitComboBox = new JComboBox<>(MeasurementUnit.values());
+        table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(unitComboBox));
 
         add(new JScrollPane(table), BorderLayout.CENTER);
 
@@ -51,7 +54,7 @@ public class SecondPanel extends JPanel {
         // ===== BUTTON LOGIC =====
 
         addIngredient.addActionListener(e -> {
-            model.addRow(new Object[]{"", "", ""});
+            model.addRow(new Object[]{"", "", MeasurementUnit.PIECE});
         });
 
         removeIngredient.addActionListener(e -> {
