@@ -47,11 +47,13 @@ public class CreateRecipePanel extends JPanel {
 
         JButton addIngredient = new JButton("Add Ingredient");
         JButton removeIngredient = new JButton("Remove Ingredient");
+        JButton resetRecipe = new JButton("Reset Recipe");
         JButton saveRecipe = new JButton("Save Recipe");
         JButton backButton = new JButton("Back to Menu");
 
         buttonPanel.add(addIngredient);
         buttonPanel.add(removeIngredient);
+        buttonPanel.add(resetRecipe);
         buttonPanel.add(saveRecipe);
         buttonPanel.add(backButton);
 
@@ -68,6 +70,12 @@ public class CreateRecipePanel extends JPanel {
             if (row != -1) {
                 model.removeRow(row);
             }
+        });
+
+        resetRecipe.addActionListener(e -> {
+            nameField.setText("");
+            servingsField.setText("");
+            model.setRowCount(0);
         });
 
         backButton.addActionListener(e -> {
