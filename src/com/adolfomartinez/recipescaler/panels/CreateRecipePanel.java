@@ -5,6 +5,10 @@ import com.adolfomartinez.recipescaler.model.Ingredient;
 import com.adolfomartinez.recipescaler.model.MeasurementUnit;
 import com.adolfomartinez.recipescaler.model.Recipe;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -89,8 +93,14 @@ public class CreateRecipePanel extends JPanel {
         saveRecipe.addActionListener(e -> {
             try {
                 Recipe recipe = buildRecipeFromForm(nameField, servingsField, model);
+                Path savedPath = saveRecipeToTextFile(recipe);
                 JOptionPane.showMessageDialog(this,
-                        "Recipe validated: " + recipe.getName() + " (" + recipe.getIngredients().size() + " ingredients)");
+                        "Recipe saved to: " + savedPath.toAbsolutePath());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Could not save recipe file: " + ex.getMessage(),
+                        "Save Error",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Invalid Recipe", JOptionPane.ERROR_MESSAGE);
             }
@@ -147,5 +157,42 @@ public class CreateRecipePanel extends JPanel {
 
     private String valueAsTrimmedString(Object value) {
         return value == null ? "" : value.toString().trim();
+    }
+
+    private Path saveRecipeToTextFile(Recipe recipe) throws IOException {
+        Path saveDirectory = Path.of("saved-recipes");
+        Files.createDirectories(saveDirectory);
+
+        String fileName = sanitizeFileName(recipe.getName()) + ".txt";
+        Path filePath = saveDirectory.resolve(fileName);
+        String fileContent = buildRecipeTextContent(recipe);
+        Files.writeString(filePath, fileContent, StandardCharsets.UTF_8);
+
+        return filePath;
+    }
+
+    private String buildRecipeTextContent(Recipe recipe) {
+        StringBuilder content = new StringBuilder();
+        content.append("Recipe Name: ").append(recipe.getName()).append(System.lineSeparator());
+        content.append("Base Servings: ").append(recipe.getBaseServings()).append(System.lineSeparator());
+        content.append(System.lineSeparator());
+        content.append("Ingredients:").append(System.lineSeparator());
+
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            content.append("- ")
+                    .append(ingredient.getName())
+                    .append(": ")
+                    .append(ingredient.getAmount())
+                    .append(" ")
+                    .append(ingredient.getUnit())
+                    .append(System.lineSeparator());
+        }
+
+        return content.toString();
+    }
+
+    private String sanitizeFileName(String recipeName) {
+        String sanitized = recipeName.replaceAll("[^a-zA-Z0-9-_ ]", "").trim().replace(" ", "_");
+        return sanitized.isEmpty() ? "recipe" : sanitized;
     }
 }
