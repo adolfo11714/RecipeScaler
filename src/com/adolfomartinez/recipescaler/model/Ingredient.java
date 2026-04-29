@@ -1,4 +1,4 @@
-package com.adolfomartinez.recipescaler;
+package com.adolfomartinez.recipescaler.model;
 
 public class Ingredient {
     private final String name;

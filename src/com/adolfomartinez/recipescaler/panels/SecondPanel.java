@@ -1,7 +1,7 @@
 package com.adolfomartinez.recipescaler.panels;
 
 import com.adolfomartinez.recipescaler.GuiManager;
-import com.adolfomartinez.recipescaler.MeasurementUnit;
+import com.adolfomartinez.recipescaler.model.MeasurementUnit;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
