@@ -66,7 +66,7 @@ public class CreateRecipePanel extends JPanel {
         // ===== BUTTON LOGIC =====
 
         addIngredient.addActionListener(e -> {
-            model.addRow(new Object[]{"", "", MeasurementUnit.PIECE});
+            model.addRow(new Object[]{"", "", MeasurementUnit.TEASPOON});
         });
 
         removeIngredient.addActionListener(e -> {
