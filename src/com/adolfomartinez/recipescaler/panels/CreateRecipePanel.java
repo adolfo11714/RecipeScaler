@@ -7,9 +7,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-public class SecondPanel extends JPanel {
+public class CreateRecipePanel extends JPanel {
 
-    public SecondPanel(GuiManager frame) {
+    public CreateRecipePanel(GuiManager frame) {
         setLayout(new BorderLayout(0, 12));
         setBorder(new EmptyBorder(16, 16, 16, 16));
 

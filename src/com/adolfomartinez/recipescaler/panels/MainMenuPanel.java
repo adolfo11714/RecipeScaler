@@ -18,7 +18,7 @@ public class MainMenuPanel extends JPanel {
         // Setting button size
         Dimension buttonSize = new Dimension(400, 70);
 
-        JButton secondButton = new JButton("Go to Second Screen");
+        JButton secondButton = new JButton("Create Recipe");
         JButton thirdButton = new JButton("Go to Third Screen");
         JButton fourthButton = new JButton("Go to Fourth Screen");
         JButton fifthButton = new JButton("Go to Fifth Screen");
