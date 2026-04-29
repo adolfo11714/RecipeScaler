@@ -4,15 +4,18 @@ import com.adolfomartinez.recipescaler.GuiManager;
 import com.adolfomartinez.recipescaler.MeasurementUnit;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 public class SecondPanel extends JPanel {
 
     public SecondPanel(GuiManager frame) {
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(0, 12));
+        setBorder(new EmptyBorder(16, 16, 16, 16));
 
         // ===== TOP FORM =====
         JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        formPanel.setBorder(new EmptyBorder(0, 0, 4, 0));
 
         JLabel nameLabel = new JLabel("Recipe Name:");
         JTextField nameField = new JTextField();
@@ -34,10 +37,13 @@ public class SecondPanel extends JPanel {
         JComboBox<MeasurementUnit> unitComboBox = new JComboBox<>(MeasurementUnit.values());
         table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(unitComboBox));
 
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        JScrollPane tableScrollPane = new JScrollPane(table);
+        tableScrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        add(tableScrollPane, BorderLayout.CENTER);
 
         // ===== BUTTONS =====
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBorder(new EmptyBorder(4, 0, 0, 0));
 
         JButton addIngredient = new JButton("Add Ingredient");
         JButton removeIngredient = new JButton("Remove Ingredient");
