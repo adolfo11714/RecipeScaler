@@ -14,7 +14,7 @@ public class App {
 
             // register all the panels that the card layout will switch between
             gm.registerScreen(GuiManager.MAIN_SCREEN, new MainMenuPanel(gm));
-            gm.registerScreen(GuiManager.SECOND_SCREEN, new CreateRecipePanel(gm));
+            gm.registerScreen(GuiManager.CREATE_RECIPE, new CreateRecipePanel(gm));
             gm.registerScreen(GuiManager.THIRD_SCREEN, new ThirdPanel(gm));
             gm.registerScreen(GuiManager.FOURTH_SCREEN, new FourthPanel(gm));
             gm.registerScreen(GuiManager.FIFTH_SCREEN, new FifthPanel(gm));
