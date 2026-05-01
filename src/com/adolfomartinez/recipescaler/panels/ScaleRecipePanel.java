@@ -8,6 +8,7 @@ import com.adolfomartinez.recipescaler.service.RecipeScaler;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -42,25 +43,47 @@ public class ScaleRecipePanel extends JPanel {
         toolbar.add(browseButton);
         toolbar.add(fileBadge);
 
-        JPanel scaleBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 6));
-        scaleBar.setBorder(BorderFactory.createEmptyBorder(0, 16, 8, 16));
-        scaleBar.add(new JLabel("Recipe:"));
         JLabel recipeNameLabel = new JLabel("—");
-        scaleBar.add(recipeNameLabel);
-        scaleBar.add(new JLabel("Base servings (from file):"));
         JLabel baseServingsLabel = new JLabel("—");
-        scaleBar.add(baseServingsLabel);
-        scaleBar.add(new JLabel("Desired servings:"));
         JTextField desiredServingsField = new JTextField(5);
-        scaleBar.add(desiredServingsField);
         JButton scaleButton = new JButton("Scale ingredients");
-        scaleBar.add(scaleButton);
         JLabel factorLabel = new JLabel(" ");
-        scaleBar.add(factorLabel);
+
+        JPanel recipeCard = new JPanel(new BorderLayout(8, 8));
+        recipeCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(4, 8, 10, 16),
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createEtchedBorder(), "Recipe from file")));
+        JPanel recipeGrid = new JPanel(new GridLayout(2, 2, 12, 6));
+        recipeGrid.add(new JLabel("Name"));
+        recipeGrid.add(recipeNameLabel);
+        recipeGrid.add(new JLabel("Base servings"));
+        recipeGrid.add(baseServingsLabel);
+        recipeCard.add(recipeGrid, BorderLayout.CENTER);
+
+        JPanel scaleCard = new JPanel(new BorderLayout(8, 8));
+        scaleCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(4, 16, 10, 8),
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createEtchedBorder(), "Scale")));
+        JPanel scaleInputsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
+        scaleInputsRow.add(new JLabel("Desired servings"));
+        scaleInputsRow.add(desiredServingsField);
+        scaleInputsRow.add(scaleButton);
+        scaleCard.add(scaleInputsRow, BorderLayout.NORTH);
+        JPanel factorRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        factorRow.add(new JLabel("Multiplier:"));
+        factorRow.add(factorLabel);
+        scaleCard.add(factorRow, BorderLayout.SOUTH);
+
+        JPanel scaleArea = new JPanel(new BorderLayout(24, 0));
+        scaleArea.setBorder(BorderFactory.createEmptyBorder(0, 16, 8, 16));
+        scaleArea.add(recipeCard, BorderLayout.WEST);
+        scaleArea.add(scaleCard, BorderLayout.CENTER);
 
         JPanel northStack = new JPanel(new BorderLayout());
         northStack.add(toolbar, BorderLayout.NORTH);
-        northStack.add(scaleBar, BorderLayout.SOUTH);
+        northStack.add(scaleArea, BorderLayout.SOUTH);
 
         JTextArea preview = new JTextArea();
         preview.setEditable(false);
@@ -141,7 +164,7 @@ public class ScaleRecipePanel extends JPanel {
             int baseFromFile = loadedRecipe[0].getBaseServings();
             try {
                 double factor = RecipeScaler.scalingFactor(baseFromFile, targetServings);
-                factorLabel.setText(String.format("Factor: %.4g×", factor));
+                factorLabel.setText(String.format("%.4g×", factor));
 
                 scaledModel.setRowCount(0);
                 for (Ingredient ing : RecipeScaler.scaleForServings(
