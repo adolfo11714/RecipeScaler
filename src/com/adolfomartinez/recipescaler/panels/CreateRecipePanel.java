@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class CreateRecipePanel extends JPanel {
 
+    // Builds the Create Recipe screen UI and all button actions are linked correctly
     public CreateRecipePanel(GuiManager frame) {
         setLayout(new BorderLayout(0, 12));
         setBorder(new EmptyBorder(16, 16, 16, 16));
@@ -107,6 +108,8 @@ public class CreateRecipePanel extends JPanel {
         });
     }
 
+    // Reads current form/table values, validates them, and returns a Recipe object
+    // Throws exception with user-friendly messages for invalid input
     private Recipe buildRecipeFromForm(JTextField nameField, JTextField servingsField, DefaultTableModel model) {
         String recipeName = nameField.getText() == null ? "" : nameField.getText().trim();
         if (recipeName.isEmpty()) {
@@ -124,6 +127,8 @@ public class CreateRecipePanel extends JPanel {
         }
 
         List<Ingredient> ingredients = new ArrayList<>();
+        
+        // Validate each row before creating model objects so the user gets a precise row-level error
         for (int row = 0; row < model.getRowCount(); row++) {
             String ingredientName = valueAsTrimmedString(model.getValueAt(row, 0));
             if (ingredientName.isEmpty()) {
@@ -155,12 +160,15 @@ public class CreateRecipePanel extends JPanel {
         return new Recipe(recipeName, baseServings, ingredients);
     }
 
+    // Safely converts any table/form value to a trimmed string (null -> "")
     private String valueAsTrimmedString(Object value) {
         return value == null ? "" : value.toString().trim();
     }
 
+    // Persists a Recipe as a .txt file in the saved-recipes directory and returns that file path
     private Path saveRecipeToTextFile(Recipe recipe) throws IOException {
         Path saveDirectory = Path.of("saved-recipes");
+        // Create once and reuse, this is safe even if the directory already exists
         Files.createDirectories(saveDirectory);
 
         String fileName = sanitizeFileName(recipe.getName()) + ".txt";
@@ -171,8 +179,10 @@ public class CreateRecipePanel extends JPanel {
         return filePath;
     }
 
+    // Converts a Recipe object into the app's file format
     private String buildRecipeTextContent(Recipe recipe) {
         StringBuilder content = new StringBuilder();
+        // Keep a predictable plain-text format so Edit Recipe can parse these files
         content.append("Recipe Name: ").append(recipe.getName()).append(System.lineSeparator());
         content.append("Base Servings: ").append(recipe.getBaseServings()).append(System.lineSeparator());
         content.append(System.lineSeparator());
@@ -191,7 +201,9 @@ public class CreateRecipePanel extends JPanel {
         return content.toString();
     }
 
+    // Normalizes recipe names into valid filenames
     private String sanitizeFileName(String recipeName) {
+        // Regex for avoiding invalid filename characters and normalize spaces for cross-platform file safety
         String sanitized = recipeName.replaceAll("[^a-zA-Z0-9-_ ]", "").trim().replace(" ", "_");
         return sanitized.isEmpty() ? "recipe" : sanitized;
     }
