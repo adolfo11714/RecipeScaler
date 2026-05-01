@@ -58,6 +58,23 @@ public class EditRecipePanel extends JPanel {
         ingredientsTable.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(unitComboBox));
         add(new JScrollPane(ingredientsTable), BorderLayout.CENTER);
 
+        JPanel tableActionsPanel = new JPanel();
+        JButton addIngredientButton = new JButton("Add Ingredient");
+        JButton removeIngredientButton = new JButton("Remove Ingredient");
+        tableActionsPanel.add(addIngredientButton);
+        tableActionsPanel.add(removeIngredientButton);
+
+        addIngredientButton.addActionListener(e -> {
+            model.addRow(new Object[]{"", "", MeasurementUnit.TEASPOON});
+        });
+
+        removeIngredientButton.addActionListener(e -> {
+            int selectedRow = ingredientsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                model.removeRow(selectedRow);
+            }
+        });
+
         addFileButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Select Recipe File");
@@ -115,6 +132,7 @@ public class EditRecipePanel extends JPanel {
         });
 
         JPanel bottomPanel = new JPanel();
+        bottomPanel.add(tableActionsPanel);
         bottomPanel.add(saveChangesButton);
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
