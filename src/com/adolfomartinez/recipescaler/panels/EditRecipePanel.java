@@ -19,11 +19,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class EditRecipePanel extends JPanel {
+    // Parses lines like: "Flour: 2.5 cup" regex pattern to be able to accept a certain .txt file format
     private static final Pattern INGREDIENT_PATTERN =
             Pattern.compile("^(.+):\\s*([0-9]+(?:\\.[0-9]+)?)\\s+(.+)$");
 
+    // Builds the Edit Recipe screen and hooks up file load/save actions
     public EditRecipePanel(GuiManager frame) {
         setLayout(new BorderLayout(0, 12));
+        // Using a 1-element array allows updating the selected file inside lambda listeners
         final File[] selectedFileRef = new File[1];
 
         JPanel topPanel = new JPanel(new BorderLayout(8, 8));
@@ -59,6 +62,7 @@ public class EditRecipePanel extends JPanel {
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Select Recipe File");
             chooser.setFileFilter(new FileNameExtensionFilter("Text Files (*.txt)", "txt"));
+            // Start users in the same folder used by CreateRecipePanel saves
             chooser.setCurrentDirectory(new File("saved-recipes"));
 
             int result = chooser.showOpenDialog(this);
@@ -67,6 +71,7 @@ public class EditRecipePanel extends JPanel {
                 selectedFileRef[0] = selectedFile;
                 selectedFileLabel.setText(selectedFile.getName());
                 try {
+                    // Populate top fields and ingredient table from selected file
                     loadRecipeFromFile(selectedFile, recipeNameField, baseServingsField, model);
                 } catch (IllegalArgumentException | IOException ex) {
                     JOptionPane.showMessageDialog(
@@ -90,6 +95,7 @@ public class EditRecipePanel extends JPanel {
             }
 
             try {
+                // Save and rename file if recipe name is changed
                 File updatedFile = overwriteRecipeFile(selectedFileRef[0], recipeNameField, baseServingsField, model);
                 selectedFileRef[0] = updatedFile;
                 selectedFileLabel.setText(updatedFile.getName());
@@ -114,6 +120,7 @@ public class EditRecipePanel extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
+    // Reads a recipe .txt file and fills table
     private void loadRecipeFromFile(
             File selectedFile,
             JTextField recipeNameField,
@@ -129,6 +136,7 @@ public class EditRecipePanel extends JPanel {
 
         recipeNameField.setText(recipeName);
         baseServingsField.setText(baseServings);
+        // Clear old rows before loading new file rows
         model.setRowCount(0);
 
         for (String line : lines) {
@@ -151,6 +159,7 @@ public class EditRecipePanel extends JPanel {
         }
     }
 
+    // Extracts value after a required header prefix like "Recipe Name:"
     private String parseHeaderValue(String line, String prefix) {
         if (!line.startsWith(prefix)) {
             throw new IllegalArgumentException("Missing header: " + prefix);
@@ -158,6 +167,7 @@ public class EditRecipePanel extends JPanel {
         return line.substring(prefix.length()).trim();
     }
 
+    // Converts unit text from file into a MeasurementUnit enum
     private MeasurementUnit unitFromLabel(String unitLabel) {
         for (MeasurementUnit unit : MeasurementUnit.values()) {
             if (unit.toString().equalsIgnoreCase(unitLabel) || unit.name().equalsIgnoreCase(unitLabel)) {
@@ -167,6 +177,7 @@ public class EditRecipePanel extends JPanel {
         throw new IllegalArgumentException("Unknown measurement unit: " + unitLabel);
     }
 
+    // Overwrites recipe file content and renames file when recipe name changes
     private File overwriteRecipeFile(
             File selectedFile,
             JTextField recipeNameField,
@@ -178,8 +189,10 @@ public class EditRecipePanel extends JPanel {
         Path currentPath = selectedFile.toPath();
         Path targetPath = currentPath.resolveSibling(newFileName);
 
+        // Write to the target filename first
         Files.writeString(targetPath, fileContent, StandardCharsets.UTF_8);
 
+        // If renamed, remove old file so only the new name is left
         if (!currentPath.equals(targetPath)) {
             Files.deleteIfExists(currentPath);
         }
@@ -187,6 +200,7 @@ public class EditRecipePanel extends JPanel {
         return targetPath.toFile();
     }
 
+    // Validates edited values and builds a Recipe object
     private Recipe buildRecipeFromForm(
             JTextField recipeNameField,
             JTextField baseServingsField,
@@ -207,6 +221,7 @@ public class EditRecipePanel extends JPanel {
         }
 
         List<Ingredient> ingredients = new ArrayList<>();
+        // Validate each table row and convert it into Ingredient objects
         for (int row = 0; row < model.getRowCount(); row++) {
             String ingredientName = valueAsTrimmedString(model.getValueAt(row, 0));
             if (ingredientName.isEmpty()) {
@@ -238,6 +253,7 @@ public class EditRecipePanel extends JPanel {
         return new Recipe(recipeName, baseServings, ingredients);
     }
 
+    // Converts Recipe into the same text format used by create/edit screens
     private String buildRecipeTextContent(Recipe recipe) {
         StringBuilder content = new StringBuilder();
         content.append("Recipe Name: ").append(recipe.getName()).append(System.lineSeparator());
@@ -258,10 +274,12 @@ public class EditRecipePanel extends JPanel {
         return content.toString();
     }
 
+    // Safe helper for reading table values: null -> "", otherwise trimmed text
     private String valueAsTrimmedString(Object value) {
         return value == null ? "" : value.toString().trim();
     }
 
+    // Cleans recipe names so they can safely be used as filenames regex for avoiding invalid filenames
     private String sanitizeFileName(String recipeName) {
         String sanitized = recipeName.replaceAll("[^a-zA-Z0-9-_ ]", "").trim().replace(" ", "_");
         return sanitized.isEmpty() ? "recipe" : sanitized;
