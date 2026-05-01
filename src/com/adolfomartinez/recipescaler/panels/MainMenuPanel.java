@@ -4,6 +4,9 @@ import com.adolfomartinez.recipescaler.GuiManager;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.io.File;
 import javax.swing.*;
 
 public class MainMenuPanel extends JPanel {
@@ -59,6 +62,9 @@ public class MainMenuPanel extends JPanel {
         fifthButton.setMaximumSize(buttonSize);
         fifthButton.setMinimumSize(buttonSize);
 
+        // Variable to check if there are saved recipes
+        refreshEditRecipeButtonState(editRecipeButton);
+
         // When user clicks on the button it will lead them to respective screen
         createRecipeButton.addActionListener(e -> frame.showScreen(GuiManager.CREATE_RECIPE));
 
@@ -67,5 +73,29 @@ public class MainMenuPanel extends JPanel {
         fourthButton.addActionListener(e -> frame.showScreen(GuiManager.FOURTH_SCREEN));
 
         fifthButton.addActionListener(e -> frame.showScreen(GuiManager.FIFTH_SCREEN));
+
+        // Re-check saved files each time this panel is shown in the card layout
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                refreshEditRecipeButtonState(editRecipeButton);
+            }
+        });
+    }
+
+    private boolean hasSavedRecipeFiles() {
+        File saveDir = new File("saved-recipes");
+        if (!saveDir.isDirectory()) {
+            return false;
+        }
+
+        File[] recipeFiles = saveDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".txt"));
+        return recipeFiles != null && recipeFiles.length > 0;
+    }
+
+    private void refreshEditRecipeButtonState(JButton editRecipeButton) {
+        boolean hasSavedRecipes = hasSavedRecipeFiles();
+        editRecipeButton.setEnabled(hasSavedRecipes);
+        editRecipeButton.setToolTipText(hasSavedRecipes ? null : "Create and save a recipe first.");
     }
 }
