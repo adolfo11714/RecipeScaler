@@ -19,13 +19,13 @@ public class MainMenuPanel extends JPanel {
         Dimension buttonSize = new Dimension(400, 70);
 
         JButton createRecipeButton = new JButton("Create Recipe");
-        JButton thirdButton = new JButton("Go to Third Screen");
+        JButton editRecipeButton = new JButton("Edit Recipe");
         JButton fourthButton = new JButton("Go to Fourth Screen");
         JButton fifthButton = new JButton("Go to Fifth Screen");
 
         // Center Buttons (BoxLayout needs this)
         createRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        thirdButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        editRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         fourthButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         fifthButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -33,7 +33,7 @@ public class MainMenuPanel extends JPanel {
         menu.add(Box.createVerticalGlue());
         menu.add(createRecipeButton);
         menu.add(Box.createVerticalStrut(15));
-        menu.add(thirdButton);
+        menu.add(editRecipeButton);
         menu.add(Box.createVerticalStrut(15));
         menu.add(fourthButton);
         menu.add(Box.createVerticalStrut(15));
@@ -47,9 +47,9 @@ public class MainMenuPanel extends JPanel {
         createRecipeButton.setMaximumSize(buttonSize);
         createRecipeButton.setMinimumSize(buttonSize);
 
-        thirdButton.setPreferredSize(buttonSize);
-        thirdButton.setMaximumSize(buttonSize);
-        thirdButton.setMinimumSize(buttonSize);
+        editRecipeButton.setPreferredSize(buttonSize);
+        editRecipeButton.setMaximumSize(buttonSize);
+        editRecipeButton.setMinimumSize(buttonSize);
 
         fourthButton.setPreferredSize(buttonSize);
         fourthButton.setMaximumSize(buttonSize);
@@ -62,7 +62,7 @@ public class MainMenuPanel extends JPanel {
         // When user clicks on the button it will lead them to respective screen
         createRecipeButton.addActionListener(e -> frame.showScreen(GuiManager.CREATE_RECIPE));
 
-        thirdButton.addActionListener(e -> frame.showScreen(GuiManager.THIRD_SCREEN));
+        editRecipeButton.addActionListener(e -> frame.showScreen(GuiManager.EDIT_RECIPE));
 
         fourthButton.addActionListener(e -> frame.showScreen(GuiManager.FOURTH_SCREEN));
 

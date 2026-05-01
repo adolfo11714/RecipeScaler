@@ -6,8 +6,8 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class ThirdPanel extends JPanel {
-    public ThirdPanel(GuiManager frame) {
+public class EditRecipePanel extends JPanel {
+    public EditRecipePanel(GuiManager frame) {
         setLayout(new BorderLayout(0, 8));
 
         JPanel topPanel = new JPanel(new BorderLayout(8, 0));
