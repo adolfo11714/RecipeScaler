@@ -1,6 +1,7 @@
 package com.adolfomartinez.recipescaler.panels;
 
 import com.adolfomartinez.recipescaler.GuiManager;
+import com.adolfomartinez.recipescaler.io.RecipeTextFileReader;
 import com.adolfomartinez.recipescaler.model.Ingredient;
 import com.adolfomartinez.recipescaler.model.MeasurementUnit;
 import com.adolfomartinez.recipescaler.model.Recipe;
@@ -12,16 +13,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class EditRecipePanel extends JPanel {
-    // Parses lines like: "Flour: 2.5 cup" regex pattern to be able to accept a certain .txt file format
-    private static final Pattern INGREDIENT_PATTERN =
-            Pattern.compile("^(.+):\\s*([0-9]+(?:\\.[0-9]+)?)\\s+(.+)$");
 
     // Builds the Edit Recipe screen and hooks up file load/save actions
     public EditRecipePanel(GuiManager frame) {
@@ -138,61 +134,19 @@ public class EditRecipePanel extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    // Reads a recipe .txt file and fills table
+    // Reads a recipe .txt file and fills table using shared parser
     private void loadRecipeFromFile(
             File selectedFile,
             JTextField recipeNameField,
             JTextField baseServingsField,
             DefaultTableModel model) throws IOException {
-        List<String> lines = Files.readAllLines(selectedFile.toPath(), StandardCharsets.UTF_8);
-        if (lines.size() < 4) {
-            throw new IllegalArgumentException("Recipe file is incomplete.");
-        }
-
-        String recipeName = parseHeaderValue(lines.get(0), "Recipe Name:");
-        String baseServings = parseHeaderValue(lines.get(1), "Base Servings:");
-
-        recipeNameField.setText(recipeName);
-        baseServingsField.setText(baseServings);
-        // Clear old rows before loading new file rows
+        Recipe recipe = RecipeTextFileReader.readRecipe(selectedFile);
+        recipeNameField.setText(recipe.getName());
+        baseServingsField.setText(Integer.toString(recipe.getBaseServings()));
         model.setRowCount(0);
-
-        for (String line : lines) {
-            if (!line.startsWith("- ")) {
-                continue;
-            }
-
-            String ingredientLine = line.substring(2).trim();
-            Matcher matcher = INGREDIENT_PATTERN.matcher(ingredientLine);
-            if (!matcher.matches()) {
-                throw new IllegalArgumentException("Invalid ingredient line: " + line);
-            }
-
-            String ingredientName = matcher.group(1).trim();
-            String amount = matcher.group(2).trim();
-            String unitLabel = matcher.group(3).trim();
-            MeasurementUnit unit = unitFromLabel(unitLabel);
-
-            model.addRow(new Object[]{ingredientName, amount, unit});
+        for (Ingredient ing : recipe.getIngredients()) {
+            model.addRow(new Object[]{ing.getName(), String.valueOf(ing.getAmount()), ing.getUnit()});
         }
-    }
-
-    // Extracts value after a required header prefix like "Recipe Name:"
-    private String parseHeaderValue(String line, String prefix) {
-        if (!line.startsWith(prefix)) {
-            throw new IllegalArgumentException("Missing header: " + prefix);
-        }
-        return line.substring(prefix.length()).trim();
-    }
-
-    // Converts unit text from file into a MeasurementUnit enum
-    private MeasurementUnit unitFromLabel(String unitLabel) {
-        for (MeasurementUnit unit : MeasurementUnit.values()) {
-            if (unit.toString().equalsIgnoreCase(unitLabel) || unit.name().equalsIgnoreCase(unitLabel)) {
-                return unit;
-            }
-        }
-        throw new IllegalArgumentException("Unknown measurement unit: " + unitLabel);
     }
 
     // Overwrites recipe file content and renames file when recipe name changes
