@@ -23,13 +23,13 @@ public class MainMenuPanel extends JPanel {
 
         JButton createRecipeButton = new JButton("Create Recipe");
         JButton editRecipeButton = new JButton("Edit Recipe");
-        JButton fourthButton = new JButton("Go to Fourth Screen");
+        JButton scaleRecipeButton = new JButton("Scale Recipe");
         JButton fifthButton = new JButton("Go to Fifth Screen");
 
         // Center Buttons (BoxLayout needs this)
         createRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         editRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        fourthButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        scaleRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         fifthButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Center vertically
@@ -38,7 +38,7 @@ public class MainMenuPanel extends JPanel {
         menu.add(Box.createVerticalStrut(15));
         menu.add(editRecipeButton);
         menu.add(Box.createVerticalStrut(15));
-        menu.add(fourthButton);
+        menu.add(scaleRecipeButton);
         menu.add(Box.createVerticalStrut(15));
         menu.add(fifthButton);
         menu.add(Box.createVerticalGlue());
@@ -54,9 +54,9 @@ public class MainMenuPanel extends JPanel {
         editRecipeButton.setMaximumSize(buttonSize);
         editRecipeButton.setMinimumSize(buttonSize);
 
-        fourthButton.setPreferredSize(buttonSize);
-        fourthButton.setMaximumSize(buttonSize);
-        fourthButton.setMinimumSize(buttonSize);
+        scaleRecipeButton.setPreferredSize(buttonSize);
+        scaleRecipeButton.setMaximumSize(buttonSize);
+        scaleRecipeButton.setMinimumSize(buttonSize);
 
         fifthButton.setPreferredSize(buttonSize);
         fifthButton.setMaximumSize(buttonSize);
@@ -70,7 +70,7 @@ public class MainMenuPanel extends JPanel {
 
         editRecipeButton.addActionListener(e -> frame.showScreen(GuiManager.EDIT_RECIPE));
 
-        fourthButton.addActionListener(e -> frame.showScreen(GuiManager.FOURTH_SCREEN));
+        scaleRecipeButton.addActionListener(e -> frame.showScreen(GuiManager.SCALE_RECIPE));
 
         fifthButton.addActionListener(e -> frame.showScreen(GuiManager.FIFTH_SCREEN));
 

@@ -10,7 +10,7 @@ public class GuiManager {
     public static final String MAIN_SCREEN = "main";
     public static final String CREATE_RECIPE = "createRecipe";
     public static final String EDIT_RECIPE = "editRecipe";
-    public static final String FOURTH_SCREEN = "fourth";
+    public static final String SCALE_RECIPE = "scaleRecipe";
     public static final String FIFTH_SCREEN = "fifth";
 
     private static GuiManager instance;
