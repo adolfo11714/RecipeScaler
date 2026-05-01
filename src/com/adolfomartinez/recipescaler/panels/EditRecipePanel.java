@@ -1,12 +1,16 @@
 package com.adolfomartinez.recipescaler.panels;
 
 import com.adolfomartinez.recipescaler.GuiManager;
+import com.adolfomartinez.recipescaler.model.Ingredient;
 import com.adolfomartinez.recipescaler.model.MeasurementUnit;
+import com.adolfomartinez.recipescaler.model.Recipe;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +24,7 @@ public class EditRecipePanel extends JPanel {
 
     public EditRecipePanel(GuiManager frame) {
         setLayout(new BorderLayout(0, 12));
+        final File[] selectedFileRef = new File[1];
 
         JPanel topPanel = new JPanel(new BorderLayout(8, 8));
         JButton addFileButton = new JButton("Add File");
@@ -27,8 +32,8 @@ public class EditRecipePanel extends JPanel {
         JPanel recipeInfoPanel = new JPanel(new java.awt.GridLayout(2, 2, 10, 10));
         JTextField recipeNameField = new JTextField();
         JTextField baseServingsField = new JTextField();
-        recipeNameField.setEditable(false);
-        baseServingsField.setEditable(false);
+        recipeNameField.setEditable(true);
+        baseServingsField.setEditable(true);
 
         recipeInfoPanel.add(new JLabel("Recipe Name:"));
         recipeInfoPanel.add(recipeNameField);
@@ -59,6 +64,7 @@ public class EditRecipePanel extends JPanel {
             int result = chooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = chooser.getSelectedFile();
+                selectedFileRef[0] = selectedFile;
                 selectedFileLabel.setText(selectedFile.getName());
                 try {
                     loadRecipeFromFile(selectedFile, recipeNameField, baseServingsField, model);
@@ -72,12 +78,40 @@ public class EditRecipePanel extends JPanel {
             }
         });
 
+        JButton saveChangesButton = new JButton("Save Changes");
+        saveChangesButton.addActionListener(e -> {
+            if (selectedFileRef[0] == null) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Select a recipe file first.",
+                        "No File Selected",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            try {
+                File updatedFile = overwriteRecipeFile(selectedFileRef[0], recipeNameField, baseServingsField, model);
+                selectedFileRef[0] = updatedFile;
+                selectedFileLabel.setText(updatedFile.getName());
+                JOptionPane.showMessageDialog(this, "Recipe file updated successfully.");
+            } catch (IllegalArgumentException | IOException ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Could not save recipe file: " + ex.getMessage(),
+                        "Save Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         JButton backButton = new JButton("Back to Menu");
         backButton.addActionListener(e -> {
             frame.showScreen(GuiManager.MAIN_SCREEN);
         });
 
-        add(backButton, BorderLayout.SOUTH);
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(saveChangesButton);
+        bottomPanel.add(backButton);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private void loadRecipeFromFile(
@@ -131,5 +165,105 @@ public class EditRecipePanel extends JPanel {
             }
         }
         throw new IllegalArgumentException("Unknown measurement unit: " + unitLabel);
+    }
+
+    private File overwriteRecipeFile(
+            File selectedFile,
+            JTextField recipeNameField,
+            JTextField baseServingsField,
+            DefaultTableModel model) throws IOException {
+        Recipe recipe = buildRecipeFromForm(recipeNameField, baseServingsField, model);
+        String fileContent = buildRecipeTextContent(recipe);
+        String newFileName = sanitizeFileName(recipe.getName()) + ".txt";
+        Path currentPath = selectedFile.toPath();
+        Path targetPath = currentPath.resolveSibling(newFileName);
+
+        Files.writeString(targetPath, fileContent, StandardCharsets.UTF_8);
+
+        if (!currentPath.equals(targetPath)) {
+            Files.deleteIfExists(currentPath);
+        }
+
+        return targetPath.toFile();
+    }
+
+    private Recipe buildRecipeFromForm(
+            JTextField recipeNameField,
+            JTextField baseServingsField,
+            DefaultTableModel model) {
+        String recipeName = recipeNameField.getText() == null ? "" : recipeNameField.getText().trim();
+        if (recipeName.isEmpty()) {
+            throw new IllegalArgumentException("Recipe name is required.");
+        }
+
+        int baseServings;
+        try {
+            baseServings = Integer.parseInt(baseServingsField.getText().trim());
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Base servings must be a whole number.");
+        }
+        if (baseServings <= 0) {
+            throw new IllegalArgumentException("Base servings must be greater than 0.");
+        }
+
+        List<Ingredient> ingredients = new ArrayList<>();
+        for (int row = 0; row < model.getRowCount(); row++) {
+            String ingredientName = valueAsTrimmedString(model.getValueAt(row, 0));
+            if (ingredientName.isEmpty()) {
+                throw new IllegalArgumentException("Ingredient name is required on row " + (row + 1) + ".");
+            }
+
+            double amount;
+            try {
+                amount = Double.parseDouble(valueAsTrimmedString(model.getValueAt(row, 1)));
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("Ingredient amount must be numeric on row " + (row + 1) + ".");
+            }
+            if (amount <= 0) {
+                throw new IllegalArgumentException("Ingredient amount must be greater than 0 on row " + (row + 1) + ".");
+            }
+
+            Object unitValue = model.getValueAt(row, 2);
+            if (!(unitValue instanceof MeasurementUnit unit)) {
+                throw new IllegalArgumentException("Ingredient unit is required on row " + (row + 1) + ".");
+            }
+
+            ingredients.add(new Ingredient(ingredientName, amount, unit));
+        }
+
+        if (ingredients.isEmpty()) {
+            throw new IllegalArgumentException("Add at least one ingredient before saving.");
+        }
+
+        return new Recipe(recipeName, baseServings, ingredients);
+    }
+
+    private String buildRecipeTextContent(Recipe recipe) {
+        StringBuilder content = new StringBuilder();
+        content.append("Recipe Name: ").append(recipe.getName()).append(System.lineSeparator());
+        content.append("Base Servings: ").append(recipe.getBaseServings()).append(System.lineSeparator());
+        content.append(System.lineSeparator());
+        content.append("Ingredients:").append(System.lineSeparator());
+
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            content.append("- ")
+                    .append(ingredient.getName())
+                    .append(": ")
+                    .append(ingredient.getAmount())
+                    .append(" ")
+                    .append(ingredient.getUnit())
+                    .append(System.lineSeparator());
+        }
+
+        return content.toString();
+    }
+
+    private String valueAsTrimmedString(Object value) {
+        return value == null ? "" : value.toString().trim();
+    }
+
+    private String sanitizeFileName(String recipeName) {
+        String sanitized = recipeName.replaceAll("[^a-zA-Z0-9-_ ]", "").trim().replace(" ", "_");
+        return sanitized.isEmpty() ? "recipe" : sanitized;
     }
 }
