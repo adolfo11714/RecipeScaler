@@ -2,6 +2,7 @@ package com.adolfomartinez.recipescaler.panels;
 
 import com.adolfomartinez.recipescaler.GuiManager;
 import com.adolfomartinez.recipescaler.io.RecipeTextFileReader;
+import com.adolfomartinez.recipescaler.io.RecipeTextFormatter;
 import com.adolfomartinez.recipescaler.model.Ingredient;
 import com.adolfomartinez.recipescaler.model.Recipe;
 import com.adolfomartinez.recipescaler.service.RecipeScaler;
@@ -13,6 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -31,10 +35,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 // Load a recipe file (base servings come from the file), enter how many servings you want, then scale amounts
 public class ScaleRecipePanel extends JPanel {
 
+    /** Where scaled exports are suggested (directory is created when saving). */
+    private static final String SAVED_SCALED_RECIPES_DIR = "saved-scaled-recipes";
+
     public ScaleRecipePanel(GuiManager frame) {
         setLayout(new BorderLayout(10, 10));
 
         final Recipe[] loadedRecipe = new Recipe[1];
+        final Recipe[] lastScaledRecipe = new Recipe[1];
 
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         toolbar.setBorder(BorderFactory.createEmptyBorder(12, 16, 8, 16));
@@ -48,6 +56,8 @@ public class ScaleRecipePanel extends JPanel {
         JTextField desiredServingsField = new JTextField(5);
         JButton scaleButton = new JButton("Scale ingredients");
         JLabel factorLabel = new JLabel(" ");
+        JButton saveScaledButton = new JButton("Save scaled recipe…");
+        saveScaledButton.setEnabled(false);
 
         JPanel recipeCard = new JPanel(new BorderLayout(8, 8));
         recipeCard.setBorder(BorderFactory.createCompoundBorder(
@@ -119,6 +129,8 @@ public class ScaleRecipePanel extends JPanel {
             File file = chooser.getSelectedFile();
             fileBadge.setText(file.getName());
             loadedRecipe[0] = null;
+            lastScaledRecipe[0] = null;
+            saveScaledButton.setEnabled(false);
             baseServingsLabel.setText("—");
             scaledModel.setRowCount(0);
             factorLabel.setText(" ");
@@ -135,11 +147,13 @@ public class ScaleRecipePanel extends JPanel {
             } catch (IllegalArgumentException ex) {
                 preview.setText("");
                 baseServingsLabel.setText("—");
+                saveScaledButton.setEnabled(false);
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Invalid recipe file",
                         JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
                 preview.setText("");
                 baseServingsLabel.setText("—");
+                saveScaledButton.setEnabled(false);
                 JOptionPane.showMessageDialog(this, "Could not read file: " + ex.getMessage(),
                         "Read error", JOptionPane.ERROR_MESSAGE);
             }
@@ -166,13 +180,74 @@ public class ScaleRecipePanel extends JPanel {
                 double factor = RecipeScaler.scalingFactor(baseFromFile, targetServings);
                 factorLabel.setText(String.format("%.4g×", factor));
 
+                List<Ingredient> scaledIngredients = RecipeScaler.scaleForServings(
+                        loadedRecipe[0], baseFromFile, targetServings);
+
+                Recipe scaledRecipe = new Recipe(
+                        loadedRecipe[0].getName(), targetServings, scaledIngredients);
+                lastScaledRecipe[0] = scaledRecipe;
+
                 scaledModel.setRowCount(0);
-                for (Ingredient ing : RecipeScaler.scaleForServings(
-                        loadedRecipe[0], baseFromFile, targetServings)) {
+                for (Ingredient ing : scaledIngredients) {
                     scaledModel.addRow(new Object[]{ing.getName(), ing.getAmount(), ing.getUnit()});
                 }
+                saveScaledButton.setEnabled(true);
             } catch (IllegalArgumentException ex) {
+                lastScaledRecipe[0] = null;
+                saveScaledButton.setEnabled(false);
+                scaledModel.setRowCount(0);
+                factorLabel.setText(" ");
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Cannot scale",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        saveScaledButton.addActionListener(e -> {
+            if (lastScaledRecipe[0] == null) {
+                JOptionPane.showMessageDialog(this, "Scale the recipe first, then save.",
+                        "Nothing to save", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            Recipe recipe = lastScaledRecipe[0];
+            try {
+                Path scaledDir = Path.of(SAVED_SCALED_RECIPES_DIR).toAbsolutePath();
+                Files.createDirectories(scaledDir);
+
+                JFileChooser saver = new JFileChooser();
+                saver.setDialogTitle("Save scaled recipe");
+                saver.setFileFilter(new FileNameExtensionFilter("Text (*.txt)", "txt"));
+                saver.setCurrentDirectory(scaledDir.toFile());
+                String suggested = RecipeTextFormatter.sanitizeFileName(recipe.getName())
+                        + "_" + recipe.getBaseServings() + "servings.txt";
+                saver.setSelectedFile(new File(suggested));
+
+                if (saver.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+                    return;
+                }
+
+                File target = saver.getSelectedFile();
+                File parent = target.getParentFile();
+                if (parent != null && !parent.exists()) {
+                    JOptionPane.showMessageDialog(this, "That folder does not exist.", "Save error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!target.getName().toLowerCase(Locale.ROOT).endsWith(".txt")) {
+                    target = parent != null
+                            ? new File(parent, target.getName() + ".txt")
+                            : new File(target.getName() + ".txt");
+                }
+
+                Files.writeString(
+                        target.toPath(),
+                        RecipeTextFormatter.formatExport(recipe),
+                        StandardCharsets.UTF_8);
+                JOptionPane.showMessageDialog(this, "Saved to:\n" + target.getAbsolutePath());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Could not save file: " + ex.getMessage(),
+                        "Save error",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -184,6 +259,7 @@ public class ScaleRecipePanel extends JPanel {
         south.setBorder(BorderFactory.createEmptyBorder(0, 16, 8, 16));
         JButton backButton = new JButton("Back to Menu");
         backButton.addActionListener(e -> frame.showScreen(GuiManager.MAIN_SCREEN));
+        south.add(saveScaledButton);
         south.add(backButton);
         add(south, BorderLayout.SOUTH);
     }
