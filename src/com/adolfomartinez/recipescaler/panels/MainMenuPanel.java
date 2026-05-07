@@ -24,13 +24,13 @@ public class MainMenuPanel extends JPanel {
         JButton createRecipeButton = new JButton("Create Recipe");
         JButton editRecipeButton = new JButton("Edit Recipe");
         JButton scaleRecipeButton = new JButton("Scale Recipe");
-        JButton fifthButton = new JButton("Go to Fifth Screen");
+        JButton exportButton = new JButton("Export Recipe");
 
         // Center Buttons (BoxLayout needs this)
         createRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         editRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         scaleRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        fifthButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        exportButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Center vertically
         menu.add(Box.createVerticalGlue());
@@ -40,7 +40,7 @@ public class MainMenuPanel extends JPanel {
         menu.add(Box.createVerticalStrut(15));
         menu.add(scaleRecipeButton);
         menu.add(Box.createVerticalStrut(15));
-        menu.add(fifthButton);
+        menu.add(exportButton);
         menu.add(Box.createVerticalGlue());
 
         add(menu, BorderLayout.CENTER);
@@ -58,9 +58,9 @@ public class MainMenuPanel extends JPanel {
         scaleRecipeButton.setMaximumSize(buttonSize);
         scaleRecipeButton.setMinimumSize(buttonSize);
 
-        fifthButton.setPreferredSize(buttonSize);
-        fifthButton.setMaximumSize(buttonSize);
-        fifthButton.setMinimumSize(buttonSize);
+        exportButton.setPreferredSize(buttonSize);
+        exportButton.setMaximumSize(buttonSize);
+        exportButton.setMinimumSize(buttonSize);
 
         // Variable to check if there are saved recipes
         refreshEditRecipeButtonState(editRecipeButton);
@@ -72,7 +72,7 @@ public class MainMenuPanel extends JPanel {
 
         scaleRecipeButton.addActionListener(e -> frame.showScreen(GuiManager.SCALE_RECIPE));
 
-        fifthButton.addActionListener(e -> frame.showScreen(GuiManager.FIFTH_SCREEN));
+        exportButton.addActionListener(e -> frame.showScreen(GuiManager.EXPORT_RECIPE));
 
         // Re-check saved files each time this panel is shown in the card layout
         addComponentListener(new ComponentAdapter() {

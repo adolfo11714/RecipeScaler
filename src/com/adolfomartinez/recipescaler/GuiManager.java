@@ -11,7 +11,7 @@ public class GuiManager {
     public static final String CREATE_RECIPE = "createRecipe";
     public static final String EDIT_RECIPE = "editRecipe";
     public static final String SCALE_RECIPE = "scaleRecipe";
-    public static final String FIFTH_SCREEN = "fifth";
+    public static final String EXPORT_RECIPE = "exportRecipe";
 
     private static GuiManager instance;
     

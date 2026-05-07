@@ -1,6 +1,6 @@
 package com.adolfomartinez.recipescaler;
 
-import com.adolfomartinez.recipescaler.panels.FifthPanel;
+import com.adolfomartinez.recipescaler.panels.ExportPanel;
 import com.adolfomartinez.recipescaler.panels.ScaleRecipePanel;
 import com.adolfomartinez.recipescaler.panels.MainMenuPanel;
 import com.adolfomartinez.recipescaler.panels.CreateRecipePanel;
@@ -17,7 +17,7 @@ public class App {
             gm.registerScreen(GuiManager.CREATE_RECIPE, new CreateRecipePanel(gm));
             gm.registerScreen(GuiManager.EDIT_RECIPE, new EditRecipePanel(gm));
             gm.registerScreen(GuiManager.SCALE_RECIPE, new ScaleRecipePanel(gm));
-            gm.registerScreen(GuiManager.FIFTH_SCREEN, new FifthPanel(gm));
+            gm.registerScreen(GuiManager.EXPORT_RECIPE, new ExportPanel(gm));
             // additional screens can be registered here ("THIRD", "FOURTH", etc.)
 
             gm.showScreen(GuiManager.MAIN_SCREEN);
