@@ -35,7 +35,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 // Load a recipe file (base servings come from the file), enter how many servings you want, then scale amounts
 public class ScaleRecipePanel extends JPanel {
 
-    /** Where scaled exports are suggested (directory is created when saving). */
+    //Where scaled exports are suggested (directory is created when saving)
     private static final String SAVED_SCALED_RECIPES_DIR = "saved-scaled-recipes";
 
     public ScaleRecipePanel(GuiManager frame) {
