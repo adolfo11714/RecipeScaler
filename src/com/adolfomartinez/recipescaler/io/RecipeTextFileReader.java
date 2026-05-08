@@ -14,14 +14,18 @@ import java.util.regex.Pattern;
 
 public final class RecipeTextFileReader {
 
+    // Expected format: "Ingredient Name: <amount> <unit>"
     private static final Pattern INGREDIENT_PATTERN =
             Pattern.compile("^(.+):\\s*([0-9]+(?:\\.[0-9]+)?)\\s+(.+)$");
 
+    // Utility class; prevent instantiation
     private RecipeTextFileReader() {
     }
 
+    // Reads a UTF-8 recipe text file and converts it into a Recipe object
     public static Recipe readRecipe(File file) throws IOException {
         List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+        // Minimum expected lines include headers and at least one section line
         if (lines.size() < 4) {
             throw new IllegalArgumentException("Recipe file is incomplete.");
         }
@@ -39,6 +43,7 @@ public final class RecipeTextFileReader {
 
         List<Ingredient> ingredients = new ArrayList<>();
         for (String line : lines) {
+            // Ingredient entries are represented as bullet lines
             if (!line.startsWith("- ")) {
                 continue;
             }
@@ -61,14 +66,18 @@ public final class RecipeTextFileReader {
         return new Recipe(recipeName, baseServings, ingredients);
     }
 
+    // Extracts and trims the value portion from a required "Header: value" line
     private static String parseHeaderValue(String line, String prefix) {
+        // Validate strict header keys to catch malformed files early
         if (!line.startsWith(prefix)) {
             throw new IllegalArgumentException("Missing header: " + prefix);
         }
         return line.substring(prefix.length()).trim();
     }
 
+    // Resolves a unit label into a MeasurementUnit enum value
     private static MeasurementUnit unitFromLabel(String unitLabel) {
+        // Accept both enum constant names and display labels
         for (MeasurementUnit unit : MeasurementUnit.values()) {
             if (unit.toString().equalsIgnoreCase(unitLabel) || unit.name().equalsIgnoreCase(unitLabel)) {
                 return unit;
