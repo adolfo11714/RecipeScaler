@@ -10,6 +10,11 @@ import java.io.File;
 import javax.swing.*;
 
 public class MainMenuPanel extends JPanel {
+
+    private JButton editRecipeButton;
+    private JButton scaleRecipeButton;
+    private JButton exportButton;
+
     public MainMenuPanel(GuiManager frame) {
 
         setLayout(new BorderLayout());
@@ -22,9 +27,9 @@ public class MainMenuPanel extends JPanel {
         Dimension buttonSize = new Dimension(400, 70);
 
         JButton createRecipeButton = new JButton("Create Recipe");
-        JButton editRecipeButton = new JButton("Edit Recipe");
-        JButton scaleRecipeButton = new JButton("Scale Recipe");
-        JButton exportButton = new JButton("Export Recipe");
+        editRecipeButton = new JButton("Edit Recipe");
+        scaleRecipeButton = new JButton("Scale Recipe");
+        exportButton = new JButton("Export Recipe");
 
         // Center Buttons (BoxLayout needs this)
         createRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -62,8 +67,7 @@ public class MainMenuPanel extends JPanel {
         exportButton.setMaximumSize(buttonSize);
         exportButton.setMinimumSize(buttonSize);
 
-        // Variable to check if there are saved recipes
-        refreshEditRecipeButtonState(editRecipeButton);
+        refreshRecipeDependentButtons();
 
         // When user clicks on the button it will lead them to respective screen
         createRecipeButton.addActionListener(e -> frame.showScreen(GuiManager.CREATE_RECIPE));
@@ -74,13 +78,21 @@ public class MainMenuPanel extends JPanel {
 
         exportButton.addActionListener(e -> frame.showScreen(GuiManager.EXPORT_RECIPE));
 
-        // Re-check saved files each time this panel is shown in the card layout
+        // Re-check saved-recipes/*.txt whenever this menu becomes visible
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                refreshEditRecipeButtonState(editRecipeButton);
+                refreshRecipeDependentButtons();
             }
         });
+    }
+
+    @Override
+    public void setVisible(boolean aFlag) {
+        super.setVisible(aFlag);
+        if (aFlag) {
+            refreshRecipeDependentButtons();
+        }
     }
 
     private boolean hasSavedRecipeFiles() {
@@ -93,9 +105,18 @@ public class MainMenuPanel extends JPanel {
         return recipeFiles != null && recipeFiles.length > 0;
     }
 
-    private void refreshEditRecipeButtonState(JButton editRecipeButton) {
+    /** Edit / Scale / Export require at least one .txt in saved-recipes. */
+    private void refreshRecipeDependentButtons() {
+        if (editRecipeButton == null) {
+            return;
+        }
         boolean hasSavedRecipes = hasSavedRecipeFiles();
+        String tooltip = hasSavedRecipes ? null : "Add at least one .txt recipe in saved-recipes first.";
         editRecipeButton.setEnabled(hasSavedRecipes);
-        editRecipeButton.setToolTipText(hasSavedRecipes ? null : "Create and save a recipe first.");
+        editRecipeButton.setToolTipText(tooltip);
+        scaleRecipeButton.setEnabled(hasSavedRecipes);
+        scaleRecipeButton.setToolTipText(tooltip);
+        exportButton.setEnabled(hasSavedRecipes);
+        exportButton.setToolTipText(tooltip);
     }
 }
