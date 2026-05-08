@@ -6,9 +6,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-/**
- * Plain .txt recipe text; ingredient lines match {@link RecipeTextFileReader}.
- */
 public final class RecipeTextFormatter {
 
     private static final DecimalFormat EXPORT_AMOUNT_FORMAT;
@@ -27,9 +24,7 @@ public final class RecipeTextFormatter {
         return sanitized.isEmpty() ? "recipe" : sanitized;
     }
 
-    /**
-     * Headers, blank line, then {@code Ingredients:} and one line per ingredient using unit labels.
-     */
+    // Headers, blank line, and one line per ingredient using unit labels
     public static String formatExport(Recipe recipe) {
         String ln = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
