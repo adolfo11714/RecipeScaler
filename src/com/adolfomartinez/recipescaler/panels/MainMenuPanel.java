@@ -105,7 +105,7 @@ public class MainMenuPanel extends JPanel {
         return recipeFiles != null && recipeFiles.length > 0;
     }
 
-    /** Edit / Scale / Export require at least one .txt in saved-recipes. */
+    // Edit / Scale / Export require at least one .txt in saved-recipes
     private void refreshRecipeDependentButtons() {
         if (editRecipeButton == null) {
             return;
