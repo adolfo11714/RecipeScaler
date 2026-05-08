@@ -1,18 +1,66 @@
-## Getting Started
+## RecipeScaler
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Simple Java Swing app for creating, editing, scaling, exporting, and printing recipes.
 
-## Folder Structure
+## Run On Another Machine (After Unzipping)
 
-The workspace contains two folders by default, where:
+### 1) Install Java (JDK 17 or newer)
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+- Install a JDK (not just a JRE), version `17+`.
+- Verify installation:
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+```powershell
+java -version
+javac -version
+```
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+Both commands should work before continuing.
 
-## Dependency Management
+### 2) Unzip and open the project
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+- Unzip the folder anywhere, for example:
+  - `C:\Projects\RecipeScaler`
+- Open a terminal in the unzipped project root (the folder that contains `src`).
+
+### 3) Compile the project
+
+From the project root, run:
+
+```powershell
+mkdir build
+$files = Get-ChildItem -Path .\src -Recurse -Filter *.java | ForEach-Object FullName
+javac --release 17 -encoding UTF-8 -d build -sourcepath src $files
+```
+
+If there are no errors, compilation succeeded.
+
+### 4) Run the app
+
+```powershell
+java -cp build com.adolfomartinez.recipescaler.App
+```
+
+The RecipeScaler window should open.
+
+## What folders are created/used at runtime
+
+- `saved-recipes`: default location for created recipes.
+- `saved-scaled-recipes`: used when saving scaled recipes.
+
+If these folders do not exist yet, the app creates them when needed.
+
+## Optional: Run from VS Code
+
+1. Install Extension Pack for Java.
+2. Open the unzipped folder in VS Code.
+3. Open `src/com/adolfomartinez/recipescaler/App.java`.
+4. Click **Run** above `main`.
+
+## Troubleshooting
+
+- **`java` or `javac` not found**
+  - Reinstall JDK 17+ and restart terminal.
+- **Main menu buttons are disabled**
+  - Add at least one `.txt` recipe in `saved-recipes` using the **Create Recipe** button.
+- **Printing/email actions do not open**
+  - Ensure the OS has a default printer/mail client configured.
