@@ -38,6 +38,7 @@ public class ScaleRecipePanel extends JPanel {
     //Where scaled exports are suggested (directory is created when saving)
     private static final String SAVED_SCALED_RECIPES_DIR = "saved-scaled-recipes";
 
+    // Builds the scale-recipe UI: file browse, servings input, preview, scaled table, and save/back actions
     public ScaleRecipePanel(GuiManager frame) {
         setLayout(new BorderLayout(10, 10));
 
@@ -103,6 +104,7 @@ public class ScaleRecipePanel extends JPanel {
 
         DefaultTableModel scaledModel = new DefaultTableModel(
                 new String[]{"Ingredient", "Scaled amount", "Unit"}, 0) {
+            // Keeps the scaled-ingredients grid read-only.
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
